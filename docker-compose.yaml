@@ -1,0 +1,61 @@
+services:
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - /etc/mosquitto/config:/mosquitto/config
+      - /var/mosquitto/data:/mosquitto/data
+      - /etc/mosquitto/log:/mosquitto/log
+
+  influxdb:
+    image: influxdb:latest
+    restart: always
+    ports:
+      - 8086:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME_FILE: /run/secrets/influxdb-admin-username
+      DOCKER_INFLUXDB_INIT_PASSWORD_FILE: /run/secrets/influxdb-admin-password 
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE: /run/secrets/influxdb-admin-token
+      DOCKER_INFLUXDB_INIT_ORG: doc
+      DOCKER_INFLUXDB_INIT_BUCKET: home
+    secrets:
+      - influxdb-admin-username
+      - influxdb-admin-password
+      - influxdb-admin-token
+    volumes:
+      - type: volume
+        source: influxdb-data
+        target: /var/lib/influxdb
+      - type: volume
+        source: influxdb-config
+        target: /etc/influxdb
+
+  node_red:
+    image: nodered/node-red:latest
+    ports:
+      - "1880:1880"
+    networks:
+      - node-red-net
+    volumes:
+      - node-red-data:/data
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  node-red-data:
+
+networks:
+  node-red-net:
+
+secrets:
+  influxdb-admin-username:
+    file: ~/.env.influxdb-admin-username
+  influxdb-admin-password:
+    file: ~/.env.influxdb-admin-password
+  influxdb-admin-token:
+    file: ~/.env.influxdb-admin-token
