@@ -30,3 +30,9 @@ for( $i = 0; $i -lt $ports.length; $i++ ){
   iex "netsh interface portproxy delete v4tov4 listenport=$port listenaddress=$addr";
   iex "netsh interface portproxy add v4tov4 listenport=$port listenaddress=$addr connectport=$port connectaddress=$remoteport";
 }
+
+netsh interface portproxy show all
+
+netsh interface ip show address "Wi-Fi" `
+  | where { $_ -match "IP Address"} `
+  | %{ $_ -replace "^.*IP Address:\W*", ""}
