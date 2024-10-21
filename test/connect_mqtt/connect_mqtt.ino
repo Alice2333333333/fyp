@@ -2,99 +2,82 @@
 #include <WiFiNINA.h>
 #include "arduino_secrets.h"
 
-///////please enter your sensitive data in the Secret tab/arduino_secrets.h
-char ssid[] = SECRET_SSID;        // your network SSID (name)
-char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
-
+// Wi-Fi® information
+char ssid[] = SECRET_SSID;        
+char pass[] = SECRET_PASS;
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
-const char broker[] = "mqtt-dashboard.com";
-int        port     = 1883;
-const char topic[]  = "testarduinonano33iot/2";
-// const char topic2[]  = "real_unique_topic_2";
-// const char topic3[]  = "real_unique_topic_3";
+// MQTT broker information
 
-//set interval for sending messages (milliseconds)
-const long interval = 8000;
+const char broker[] = "192.168.100.10";
+int        port     = 1883;
+const char topic[]  = "test";
+
+// Interval for sending messages (in milliseconds) to the MQTT broker
+const long interval = 5000;
 unsigned long previousMillis = 0;
 
+// Data to send to the MQTT broker
 int count = 0;
 
 void setup() {
-  //Initialize serial and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    ; // Wait for serial port to connect, needed for native USB port only
   }
 
-  // attempt to connect to Wifi network:
-  Serial.print("Attempting to connect to WPA SSID: ");
+  // Attempt to connect to the defined Wi-Fi® network
+  Serial.print("- Attempting to connect to WPA SSID: ");
   Serial.println(ssid);
+
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-    // failed, retry
+    // Connection attempt failed, retry again
     Serial.print(".");
     delay(5000);
   }
 
-  Serial.println("You're connected to the network");
+  Serial.println("- You're connected to the network!");
   Serial.println();
-
-  Serial.print("Attempting to connect to the MQTT broker: ");
+  
+  // Attempt to connect to the defined Wi-Fi® network
+  Serial.print("- Attempting to connect to the MQTT broker: ");
   Serial.println(broker);
 
+  // Connection attempt to the MQTT broker failed
   if (!mqttClient.connect(broker, port)) {
-    Serial.print("MQTT connection failed! Error code = ");
+    Serial.println("- MQTT connection failed!");
+    Serial.print("- Error code: ");
     Serial.println(mqttClient.connectError());
 
     while (1);
   }
 
-  Serial.println("You're connected to the MQTT broker!");
+  Serial.println("- You're connected to the MQTT broker!");
   Serial.println();
 }
 
 void loop() {
-  // call poll() regularly to allow the library to send MQTT keep alive which
-  // avoids being disconnected by the broker
+  // Keep the board connected to the MQTT broker
   mqttClient.poll();
 
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= interval) {
-    // save the last time a message was sent
+    // Send the gathered data to an specific topic of the MQTT broker
     previousMillis = currentMillis;
-
-    //record random value from A0, A1 and A2
-    int Rvalue = analogRead(A0);
-    int Rvalue2 = analogRead(A1);
-    int Rvalue3 = analogRead(A2);
 
     Serial.print("Sending message to topic: ");
     Serial.println(topic);
-    Serial.println(Rvalue);
-
-    // Serial.print("Sending message to topic: ");
-    // Serial.println(topic2);
-    // Serial.println(Rvalue2);
-
-    // Serial.print("Sending message to topic: ");
-    // Serial.println(topic2);
-    // Serial.println(Rvalue3);
-
-    // send message, the Print interface can be used to set the message contents
+    
+    // Detect vibration value
+    int vibration_val;
+    vibration_val = analogRead(0); // connect to analog pin 0
+    Serial.println(vibration_val, DEC);
     mqttClient.beginMessage(topic);
-    mqttClient.print(Rvalue);
+    mqttClient.print(vibration_val);
     mqttClient.endMessage();
-
-    // mqttClient.beginMessage(topic2);
-    // mqttClient.print(Rvalue2);
-    // mqttClient.endMessage();
-
-    // mqttClient.beginMessage(topic3);
-    // mqttClient.print(Rvalue3);
-    // mqttClient.endMessage();
-
     Serial.println();
+    delay(1000);
   }
 }
