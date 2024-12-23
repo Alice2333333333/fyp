@@ -1,0 +1,18 @@
+[
+    {
+        "status": "hard_concrete",
+        "count": 24911
+    },
+    {
+        "status": "soft_concrete",
+        "count": 24897
+    },
+    {
+        "status": "minor_vibration",
+        "count": 24896
+    },
+    {
+        "status": "idle",
+        "count": 24881
+    }
+]
