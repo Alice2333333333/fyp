@@ -1,18 +1,30 @@
 [
     {
-        "status": "hard_concrete",
-        "count": 24911
+        "date": "2024-12-20",
+        "usage_hours": 4.17
     },
     {
-        "status": "soft_concrete",
-        "count": 24897
+        "date": "2024-12-21",
+        "usage_hours": 4.17
     },
     {
-        "status": "minor_vibration",
-        "count": 24896
+        "date": "2024-12-22",
+        "usage_hours": 1.39
     },
     {
-        "status": "idle",
-        "count": 24881
+        "date": "2024-12-23",
+        "usage_hours": 1.39
+    },
+    {
+        "date": "2024-12-24",
+        "usage_hours": 5.56
+    },
+    {
+        "date": "2024-12-25",
+        "usage_hours": 2.78
+    },
+    {
+        "date": "2024-12-26",
+        "usage_hours": 8.33
     }
 ]
